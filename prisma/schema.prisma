@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id            String         @id
+  name          String
+  email         String
+  emailVerified Boolean        @default(false)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  presentations Presentation[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Presentation {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  prompt     String             @db.Text
+  slideCount Int
+  style      String
+  tone       String
+  layout     String
+  status     PresentationStatus @default(DRAFT)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  slides     Slide[]
+
+  @@index([userId])
+  @@map("presentation")
+}
+
+enum PresentationStatus {
+  DRAFT
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+model Slide {
+  id             String       @id @default(cuid())
+  presentationId String
+  presentation   Presentation @relation(fields: [presentationId], references: [id], onDelete: Cascade)
+  order          Int
+  title          String
+  content        String       @db.Text
+  notes          String?      @db.Text
+  imageUrl       String?      @db.Text
+  imagePrompt    String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([presentationId])
+  @@map("slide")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique @db.VarChar(512) // FIXED: Better Auth tokens can exceed 191 chars
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?  @db.Text // FIXED: User agents are often very long
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text // FIXED: Long OAuth tokens
+  refreshToken          String?   @db.Text // FIXED: Long OAuth tokens
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text // FIXED: Scopes can be long strings
+  idToken               String?   @db.Text // FIXED: JWTs are very long
+  password              String?   @db.Text // RECOMMENDED: Future-proof hashes
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String    @db.Text // ALREADY FIXED: Good job
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
