@@ -57,10 +57,17 @@ export async function createPresentation(rawInput: unknown) {
  * Updates individual properties of an existing active slide presentation instance.
  */
 export async function updatePresentation(rawInput: unknown) {
-    const data = updatePresentationInputSchema.parse(rawInput);
+
+    // 1. Safely cast or extract the nested 'data' object
+    const payload = rawInput && typeof rawInput === 'object' && 'data' in rawInput
+        ? (rawInput as { data: unknown }).data
+        : rawInput;
+
+    // 2. Pass the unwrapped payload to your Zod schema
+    const validatedData = updatePresentationInputSchema.parse(payload);
 
     const userId = await requirePresentationUserId();
-    const { id, ...patch } = data;
+    const { id, ...patch } = validatedData;
 
     const existing = await prisma.presentation.findFirst({
         where: { id, userId },
@@ -78,36 +85,40 @@ export async function updatePresentation(rawInput: unknown) {
 
     return updated;
 }
-
 /**
  * Deletes a selected deck entry record safely from database records.
  */
 export async function deletePresentation(rawInput: unknown) {
-    const data = presentationIdInputSchema.parse(rawInput);
+    // 1. Check if rawInput contains a nested 'data' property. 
+    // If it does, use that; otherwise, default to the top-level rawInput object.
+    const targetPayload = (rawInput && typeof rawInput === 'object' && 'data' in rawInput)
+        ? (rawInput as any).data
+        : rawInput;
+
+    // 2. Safely parse the un-wrapped object, fallback to an empty object instead of undefined
+    const data = presentationIdInputSchema.parse(targetPayload ?? {});
 
     const userId = await requirePresentationUserId();
 
-    const existing = await prisma.presentation.findFirst({
-        where: { id: data.id, userId },
+    // 3. Proceed with your deletion logic cleanly
+    const deletedRow = await prisma.presentation.delete({
+        where: {
+            id: data.id,
+            userId,
+        },
     });
 
-    if (!existing) throw new Error("Presentation workspace instance not found");
-
-    await prisma.presentation.delete({
-        where: { id: data.id }
-    });
-
-    revalidatePath("/dashboard");
-
-    return { ok: true as const };
+    return deletedRow;
 }
-
 /**
  * Flags generation statuses back to processing states and retriggers background processing.
  */
 export async function regeneratePresentation(rawInput: unknown) {
-    const data = presentationIdInputSchema.parse(rawInput);
+    const payload = rawInput && typeof rawInput === 'object' && 'data' in rawInput
+        ? (rawInput as { data: unknown }).data
+        : rawInput;
 
+    const data = updatePresentationInputSchema.parse(payload);
     const userId = await requirePresentationUserId();
 
     const existing = await prisma.presentation.findFirst({

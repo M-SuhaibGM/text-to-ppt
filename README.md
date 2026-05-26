@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+
+DATABASE_URL=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+DATABASE_NAME="text-to-ppt"
+DATABASE_USER="root"
+DATABASE_PASSWORD="5277"
+DATABASE_HOST="localhost"
+BETTER_AUTH_SECRET=""
+BETTER_AUTH_URL="http://localhost:3000"
+IMAGEKIT_PUBLIC_KEY=""
+IMAGEKIT_PRIVATE_KEY=""
+IMAGEKIT_BASE_URL=""
+INNGEST_DEV=1
+GROQ_API_KEY=""
+

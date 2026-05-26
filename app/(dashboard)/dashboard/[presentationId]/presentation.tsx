@@ -1,7 +1,7 @@
-// app/(dashboard)/dashboard/[presentationId]/presentation-detail-client.tsx
+
 "use client";
 
-import { useCallback, useState, use } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -56,7 +56,7 @@ import { exportToPptx } from "@/components/export-pptx";
 
 interface PresentationDetailClientProps {
     presentationId: string;
-    initialData: PresentationWithSlides; // Matches return type of getPresentationWithSlides
+    initialData: PresentationWithSlides;
 }
 
 export default function PresentationDetailClient({ presentationId, initialData }: PresentationDetailClientProps) {
@@ -67,7 +67,6 @@ export default function PresentationDetailClient({ presentationId, initialData }
     const [showSlideshow, setShowSlideshow] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
 
-    // Initial data passed into custom React Query state wrapper to hydrate immediately
     const {
         query,
         slides,
@@ -78,10 +77,9 @@ export default function PresentationDetailClient({ presentationId, initialData }
         updateMut,
         regenerateMut,
         deleteMut,
-    } = usePresentationDetail(presentationId,
-        initialData,
-        { onDeleted: () => router.push("/dashboard") },
-    );
+    } = usePresentationDetail(presentationId, initialData, {
+        onDeleted: () => router.push("/dashboard"),
+    });
 
     const { isFullscreen, toggleFullscreen } = useFullscreen(
         "slide-preview-container"
@@ -136,6 +134,9 @@ export default function PresentationDetailClient({ presentationId, initialData }
     const thumb = presentationThumbnailUrl(data.id);
     const activeSlide = slides.at(activeSlideIndex);
 
+    // Explicitly determine if data collection is ready or processing
+    const isCompleted = data.status === "COMPLETED";
+
     return (
         <main className="min-h-screen pt-24 pb-12 px-4 bg-slate-950 text-slate-100">
             <div className="max-w-6xl mx-auto space-y-6">
@@ -184,7 +185,7 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="rounded-xl gap-1 border-slate-800 text-slate-300 hover:bg-slate-800"
+                                            className="rounded-xl gap-1 border-slate-800 bg-blue-400 text-slate-300 hover:bg-slate-800"
                                             onClick={() => setShowSlideshow(true)}
                                         >
                                             <Play className="size-4" />
@@ -193,7 +194,7 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="rounded-xl gap-1 border-slate-800 text-slate-300 hover:bg-slate-800"
+                                            className="rounded-xl gap-1 border-slate-800 bg-blue-400 text-slate-300 hover:bg-slate-800"
                                             onClick={handleExportPptx}
                                             disabled={isExporting}
                                         >
@@ -207,7 +208,7 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="rounded-xl gap-1 border-slate-800 text-slate-300 hover:bg-slate-800"
+                                    className="rounded-xl gap-1 bg-blue-400 border-slate-800 text-slate-300 hover:bg-slate-800"
                                     disabled={regenerateMut.isPending || isGenerating}
                                     onClick={() => regenerateMut.mutate()}
                                 >
@@ -221,7 +222,7 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="rounded-xl text-slate-400 hover:text-white hover:bg-slate-800"
+                                    className="rounded-xl text-white bg-indigo-700 hover:text-white hover:bg-slate-800"
                                     onClick={() => setShowSettings(!showSettings)}
                                 >
                                     {showSettings ? "Hide settings" : "Edit settings"}
@@ -411,14 +412,16 @@ export default function PresentationDetailClient({ presentationId, initialData }
                             </div>
                         )}
 
-                        {activeSlide && (
+                        {/* RENDER LOGIC BASED ON COMPLETED STATUS VS FALLBACK STATES */}
+                        {isCompleted && activeSlide ? (
                             <div className="space-y-3">
                                 <div id="slide-preview-container" className="relative group overflow-hidden rounded-2xl border border-slate-800 shadow-2xl">
                                     <SlidePreview slide={activeSlide} isFullscreen={isFullscreen} />
                                     <Button
                                         variant="secondary"
                                         size="icon"
-                                        className={`absolute top-3 right-3 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-slate-800 text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity ${isFullscreen ? "opacity-100" : ""}`}
+    
+                                        className={`absolute top-3 right-3 z-50 rounded-lg bg-slate-950/80 hover:bg-slate-900 border cursor-pointer border-slate-800 text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity ${isFullscreen ? "opacity-100" : ""}`}
                                         onClick={toggleFullscreen}
                                     >
                                         <Maximize className="size-4" />
@@ -456,12 +459,20 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                     </Button>
                                 </div>
                             </div>
-                        )}
-
-                        {slides.length === 0 && !isGenerating && (
+                        ) : !isCompleted && isGenerating ? (
+                            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center shadow-xl">
+                                <RefreshCw className="size-8 animate-spin mx-auto mb-4 text-indigo-500" />
+                                <p className="text-slate-300 text-sm font-medium">
+                                    Generating your presentation…
+                                </p>
+                                <p className="text-xs text-slate-500 font-mono mt-1">
+                                    This may take a minute
+                                </p>
+                            </div>
+                        ) : (
                             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center shadow-xl">
                                 <p className="text-slate-400 mb-4 text-sm">
-                                    No slides yet. Click "Regenerate" to create slides from your prompt.
+                                    No slides yet or generation was halted. Click "Regenerate" to build slides from your prompt.
                                 </p>
                                 <Button
                                     className="rounded-xl gap-2 bg-indigo-600 hover:bg-indigo-500 text-white"
@@ -473,27 +484,16 @@ export default function PresentationDetailClient({ presentationId, initialData }
                                 </Button>
                             </div>
                         )}
-
-                        {slides.length === 0 && isGenerating && (
-                            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center shadow-xl">
-                                <RefreshCw className="size-8 animate-spin mx-auto mb-4 text-indigo-500" />
-                                <p className="text-slate-300 text-sm font-medium">
-                                    Generating your presentation…
-                                </p>
-                                <p className="text-xs text-slate-500 font-mono mt-1">
-                                    This may take a minute
-                                </p>
-                            </div>
-                        )}
                     </div>
 
-                    {slides.length > 0 && (
+                    {/* ONLY SHOW STACK SIDEBAR IF STATUS IS READY AND SLIDES EXIST */}
+                    {isCompleted && slides.length > 0 && (
                         <aside className="lg:w-80 xl:w-96 flex flex-col">
                             <h2 className="font-mono text-xs uppercase tracking-widest px-2 pb-3 text-slate-500">
                                 Slides Stack
                             </h2>
                             <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-4 max-h-[calc(100vh-14rem)] custom-scrollbar">
-                                {slides.map((slide: { id: string; order: number; title: string; content: string; notes?: string | null; imageUrl?: string | null; }, i: number) => (
+                                {slides.map((slide, i) => (
                                     <SlideCard
                                         key={slide.id}
                                         slide={slide}

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Wand2, Presentation, Calendar, Layers, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -46,12 +46,10 @@ export default function DashboardPage() {
     layout: "balanced",
   });
 
-  // Local state for tracking past presentations data and loading state
   const [presentations, setPresentations] = useState<any[]>([]);
   const [listPending, setListPending] = useState(false);
   const [createPending, setCreatePending] = useState(false);
 
-  // Fetch past presentations when the component mounts or when the session changes
   useEffect(() => {
     if (!session) return;
 
@@ -98,7 +96,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Immediate loading state fallback during baseline auth initialization
   if (authPending) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-3">
@@ -108,15 +105,14 @@ export default function DashboardPage() {
     );
   }
 
-  // Client-side guard check fallback if not handled by a root Next.js middleware file
   if (!session) {
     router.replace("/login");
     return null;
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500/30 pt-24 pb-12 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500/30 pt-24 pb-24 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto space-y-14">
 
         {/* Dynamic AI Prompter Header */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
@@ -133,8 +129,6 @@ export default function DashboardPage() {
 
         {/* Central Workspace Canvas Card Container */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-
-          {/* Conceptual Input Field Container */}
           <div className="space-y-2">
             <Textarea
               placeholder="Describe your presentation topic, paste raw markdown notes, or layout target deck goals..."
@@ -153,11 +147,8 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Configuration Parameters Selector Array Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-            {/* Slide Track Slider Component */}
             <div className="space-y-2.5 bg-slate-950/40 p-3.5 border border-slate-800/60 rounded-xl" dir="ltr">
-              {/* 👆 Added dir="ltr" here to explicitly force left-to-right direction */}
               <div className="flex justify-between items-center">
                 <Label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
                   Target Slides:
@@ -183,7 +174,6 @@ export default function DashboardPage() {
               />
             </div>
 
-            {/* Aesthetic Style Context Selection Component */}
             <div className="space-y-2.5">
               <Label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
                 Visual Style
@@ -210,7 +200,6 @@ export default function DashboardPage() {
               </Select>
             </div>
 
-            {/* Dialect / Pitch Tone Selector Component */}
             <div className="space-y-2.5">
               <Label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
                 Copywriting Tone
@@ -237,7 +226,6 @@ export default function DashboardPage() {
               </Select>
             </div>
 
-            {/* Layout Geometry Strategy Selector Component */}
             <div className="space-y-2.5">
               <Label className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
                 Layout Blueprint
@@ -265,7 +253,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Trigger Action Execution Drawer Block */}
           <div className="flex justify-end pt-2 border-t border-slate-800/50">
             <Button
               size="lg"
@@ -288,8 +275,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Modular Prompt Layout Sandbox Presets Grid */}
-        <div className="mt-4 text-center">
+        {/* Sandbox Presets Block */}
+        <div className="text-center">
           <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-4">
             Accelerate execution with sandbox templates
           </p>
@@ -315,6 +302,87 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
+
+        <hr className="border-slate-900" />
+
+        {/* ====== 👇 NEW: PAST PRESENTATIONS HISTORY SECTION 👇 ====== */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-900 pb-4">
+            <div className="space-y-1">
+              <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                <Presentation className="w-5 h-5 text-indigo-400" />
+                Your Presentations
+              </h2>
+              <p className="text-xs text-slate-500 font-normal">
+                Access, view and continue modifying previously synthesized pitch documents.
+              </p>
+            </div>
+            <span className="text-xs font-mono bg-slate-900 text-slate-400 border border-slate-800 px-2.5 py-1 rounded-full">
+              Total: {presentations.length}
+            </span>
+          </div>
+
+          {listPending ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-2 text-slate-500">
+              <Loader2 className="w-6 h-6 animate-spin text-slate-700" />
+              <p className="text-xs font-mono">Syncing asset archive data...</p>
+            </div>
+          ) : presentations.length === 0 ? (
+            <div className="border border-dashed border-slate-800 rounded-2xl p-12 text-center space-y-3 bg-slate-900/10">
+              <div className="w-10 h-10 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center mx-auto">
+                <Presentation className="w-5 h-5 text-slate-600" />
+              </div>
+              <div className="space-y-1 max-w-sm mx-auto">
+                <p className="text-sm font-medium text-slate-300">No presentations found</p>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  You haven't generated any pitch decks yet. Fill in the prompt canvas container above to initialize your first AI workflow.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {presentations.map((ppt) => (
+                <div
+                  key={ppt.id}
+                  onClick={() => router.push(`/dashboard/${ppt.id}`)}
+                  className="group bg-slate-900 border border-slate-800/80 hover:border-indigo-500/50 p-5 rounded-2xl shadow-md cursor-pointer transition-all hover:shadow-indigo-950/20 flex flex-col justify-between gap-4 relative overflow-hidden"
+                >
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start gap-3">
+                      <h3 className="font-semibold text-slate-200 text-base line-clamp-1 group-hover:text-white transition-colors">
+                        {ppt.prompt || "Untitled Deck"}
+                      </h3>
+                      <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-all group-hover:translate-x-0.5 shrink-0 mt-1" />
+                    </div>
+                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                      {ppt.prompt}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-800/40 text-[11px] font-mono tracking-wide text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-600" />
+                      <span>
+                        {new Date(ppt.createdAt).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric"
+                        })}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 bg-slate-950/60 text-slate-400 px-2 py-0.5 rounded border border-slate-800/60">
+                      <Layers className="w-3 h-3 text-slate-500" />
+                      <span>{ppt.slideCount || ppt.slides?.length || 0} Slides</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* ============================================================ */}
+
       </div>
     </main>
   );
