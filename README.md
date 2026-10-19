@@ -1,56 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🌐 Modern Developer Portfolio
 
-## Getting Started
+A sleek, high-performance, and fully responsive personal portfolio application designed to showcase software engineering projects, technical skills, and professional experience. Built with a modern tech stack prioritizing lightning-fast page loads, fluid UI animations, and automated contact form delivery.
 
-First, run the development server:
+✨ Features
 
-```bash
+⚡ High Performance & SSR: Powered by Next.js for server-side rendering, quick client-side hydration, and optimized SEO.
+
+🎨 Modern Dark Aesthetic: Minimalist, tech-focused interface styled cleanly using Tailwind CSS.
+
+🎬 Fluid Animations: Micro-interactions, smooth page transitions, scroll-triggered reveals, and interactive component states powered by Framer Motion.
+
+📩 Direct Email Delivery: Functional contact workspace integrating Nodemailer to deliver incoming client/recruiter inquiries straight to your inbox.
+
+📱 Fully Responsive: Carefully calibrated layout break-points ensuring a seamless experience across mobile, tablet, and desktop viewports.
+
+🛠️ Tech Stack
+
+Framework: Next.js (React)
+
+Styling: Tailwind CSS
+
+Animation: Framer Motion
+
+Email Service: Nodemailer
+
+Language: TypeScript
+
+Icons: Lucide React
+
+🚀 Getting Started
+
+Follow these steps to get a local copy up and running on your machine.
+
+Prerequisites
+
+Ensure you have Node.js (v18.0.0 or higher) and npm or pnpm installed.
+
+Installation
+
+Clone the repository:
+
+git clone https://github.com/your-username/portfolio.git
+cd portfolio
+
+
+Install dependencies:
+
+npm install
+# or
+pnpm install
+
+
+Set up Environment Variables:
+Create a .env.local file in the root directory and configure your Nodemailer SMTP credentials:
+
+# Email Provider Setup (e.g., Gmail SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+CONTACT_RECEIVER_EMAIL=your-email@gmail.com
+
+
+Run the development server:
+
 npm run dev
 # or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
+Open in browser:
+Navigate to http://localhost:3000 to view the application in action.
+
+📁 Project Structure
+
+├── app/
+│   ├── api/
+│   │   └── contact/      # Nodemailer API route handler
+│   ├── layout.tsx        # Global layout & font definitions
+│   └── page.tsx          # Main landing portfolio page
+├── components/
+│   ├── ContactForm.tsx   # Interactive form component
+│   ├── HeroSection.tsx   # Framer motion animated landing view
+│   ├── Projects.tsx     # Showcased projects grid
+│   └── Skills.tsx       # Tech stack visual representation
+├── public/               # Static assets & images
+└── styles/               # Global CSS and Tailwind configurations
 
 
-DATABASE_URL=""
-GOOGLE_CLIENT_ID=""
-GOOGLE_CLIENT_SECRET=""
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
-DATABASE_NAME="text-to-ppt"
-DATABASE_USER="root"
-DATABASE_PASSWORD="5277"
-DATABASE_HOST="localhost"
-BETTER_AUTH_SECRET=""
-BETTER_AUTH_URL="http://localhost:3000"
-IMAGEKIT_PUBLIC_KEY=""
-IMAGEKIT_PRIVATE_KEY=""
-IMAGEKIT_BASE_URL=""
-INNGEST_DEV=1
-GROQ_API_KEY=""
+📄 License
 
+This project is open source and available under the MIT License.
