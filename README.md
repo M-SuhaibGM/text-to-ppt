@@ -1,6 +1,4 @@
-I will now generate a comprehensive, beautifully styled `README.md` file for your **Text-to-PPT (AI Presentation Builder & Workspace)** project.
 
-```markdown:README.md
 <div align="center">
 
 # 📊 Text-to-PPT: AI Presentation Builder & Workspace
@@ -16,7 +14,6 @@ I will now generate a comprehensive, beautifully styled `README.md` file for you
 
 </div>
 
----
 
 ## 📌 Project Overview
 
@@ -35,7 +32,6 @@ The application provides a modern presentation studio where users can preview, e
 * **🔄 Instant Router Revalidation:** Automated cache invalidation via `revalidatePath` ensuring instant updates across `/dashboard` and presentation preview routes without client-side page refreshes.
 * **🎨 Modern Tech-Focused UI:** Dark-themed studio aesthetic engineered with **Tailwind CSS**, `shadcn/ui`, and **Lucide Icons**.
 
----
 
 ## 🛠️ Architecture & Tech Stack
 
